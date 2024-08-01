@@ -112,5 +112,28 @@ pipeline:
                       - 1.0.0
                       - latest
                     caching: true
+              - step:
+                  type: SscaOrchestration
+                  name: SBOM Orchestration
+                  identifier: SBOM_Orchestration
+                  spec:
+                    mode: generation
+                    tool:
+                      type: Syft
+                      spec:
+                        format: spdx-json
+                    source:
+                      type: ecr
+                      spec:
+                        connector: martinr
+                        image: go-outyet
+                        region: latest
+                        account: "  646293245896"
+                    sbom_drift:
+                      base: last_generated_sbom
+                    resources:
+                      limits:
+                        memory: 500Mi
+                        cpu: "0.5"
           sharedPaths:
             - /var/run
