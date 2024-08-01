@@ -105,8 +105,8 @@ pipeline:
                     connectorRef: martinr
                     region: eu-west-2
                     account: "646293245896"
-                    imageName: harness/go-outyet
+                    imageName: go-outyet
                     tags:
+                      - 1.0.0
                       - latest
-                      - 0.0.1
                     caching: true
