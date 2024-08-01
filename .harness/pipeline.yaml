@@ -106,7 +106,7 @@ pipeline:
                   spec:
                     connectorRef: martinr
                     region: eu-west-2
-                    account: "646293245896"
+                    account: <+secrets.getValue("aws-account-number-martinr")>
                     imageName: go-outyet
                     tags:
                       - 1.0.0
@@ -128,7 +128,7 @@ pipeline:
                         connector: martinr
                         image: go-outyet
                         region: latest
-                        account: "  646293245896"
+                        account: <+secrets.getValue("aws-account-number-martinr")>
                     sbom_drift:
                       base: last_generated_sbom
                     resources:
