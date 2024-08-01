@@ -30,6 +30,14 @@ pipeline:
           execution:
             steps:
               - step:
+                  type: Background
+                  name: dind
+                  identifier: dind
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: docker:dind
+                    shell: Sh
+              - step:
                   type: Run
                   name: go install
                   identifier: go_install
@@ -54,49 +62,43 @@ pipeline:
                               command: go test -v ./...
                         - step:
                             type: Semgrep
-                            name: Semgrep_1
+                            name: Semgrep
                             identifier: Semgrep_1
                             spec:
+                              mode: orchestration
+                              config: default
                               target:
-                                detection: auto
                                 type: repository
+                                detection: auto
                               advanced:
                                 log:
                                   level: info
-                                args:
-                                  cli: ""
-                              mode: orchestration
-                              config: default
                         - step:
                             type: Owasp
-                            name: Owasp_1
+                            name: OWASP
                             identifier: Owasp_1
                             spec:
+                              mode: orchestration
+                              config: default
                               target:
-                                detection: auto
                                 type: repository
+                                detection: auto
                               advanced:
                                 log:
                                   level: info
-                                args:
-                                  cli: ""
-                              mode: orchestration
-                              config: default
                         - step:
                             type: OsvScanner
-                            name: OsvScanner_1
+                            name: OSV Scanner
                             identifier: OsvScanner_1
                             spec:
+                              mode: orchestration
+                              config: default
                               target:
-                                detection: auto
                                 type: repository
+                                detection: auto
                               advanced:
                                 log:
                                   level: info
-                                args:
-                                  cli: ""
-                              mode: orchestration
-                              config: default
               - step:
                   type: BuildAndPushECR
                   name: dockerbuild
@@ -110,3 +112,5 @@ pipeline:
                       - 1.0.0
                       - latest
                     caching: true
+          sharedPaths:
+            - /var/run
