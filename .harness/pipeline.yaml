@@ -119,3 +119,5 @@ pipeline:
                     caching: true
           sharedPaths:
             - /var/run
+        delegateSelectors:
+          - helm-delegate
