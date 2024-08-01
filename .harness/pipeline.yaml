@@ -30,13 +30,18 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Background
-                  name: dind
-                  identifier: dind
+                  type: Gitleaks
+                  name: Gitleaks
+                  identifier: Gitleaks
                   spec:
-                    connectorRef: account.harnessImage
-                    image: docker:dind
-                    shell: Sh
+                    mode: orchestration
+                    config: default
+                    target:
+                      type: repository
+                      detection: auto
+                    advanced:
+                      log:
+                        level: info
               - step:
                   type: Run
                   name: go install
@@ -112,28 +117,5 @@ pipeline:
                       - 1.0.0
                       - latest
                     caching: true
-              - step:
-                  type: SscaOrchestration
-                  name: SBOM Orchestration
-                  identifier: SBOM_Orchestration
-                  spec:
-                    mode: generation
-                    tool:
-                      type: Syft
-                      spec:
-                        format: spdx-json
-                    source:
-                      type: ecr
-                      spec:
-                        connector: martinr
-                        image: go-outyet
-                        region: latest
-                        account: <+secrets.getValue("aws-account-number-martinr")>
-                    sbom_drift:
-                      base: last_generated_sbom
-                    resources:
-                      limits:
-                        memory: 500Mi
-                        cpu: "0.5"
           sharedPaths:
             - /var/run
