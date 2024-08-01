@@ -98,12 +98,15 @@ pipeline:
                               mode: orchestration
                               config: default
               - step:
-                  type: BuildAndPushDockerRegistry
+                  type: BuildAndPushECR
                   name: dockerbuild
                   identifier: dockerbuild
                   spec:
-                    connectorRef: DockerHub
-                    repo: hobbit71/go-outyet
+                    connectorRef: martinr
+                    region: eu-west-2
+                    account: "646293245896"
+                    imageName: go-outyet
                     tags:
                       - latest
+                      - 0.0.1
                     caching: true
