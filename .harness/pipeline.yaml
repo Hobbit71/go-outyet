@@ -1,0 +1,109 @@
+pipeline:
+  name: go-outyet
+  identifier: gooutyet
+  projectIdentifier: MartinR_Sandbox
+  orgIdentifier: SE_Sandbox
+  description: Super simple pipeline
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: ghmartin
+        repoName: go-outyet
+        build: <+input>
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: go install
+                  identifier: go_install
+                  spec:
+                    connectorRef: DockerHub
+                    image: golang:1
+                    shell: Sh
+                    command: go build
+              - stepGroup:
+                  name: test
+                  identifier: test
+                  steps:
+                    - parallel:
+                        - step:
+                            type: Run
+                            name: go test
+                            identifier: go_test
+                            spec:
+                              connectorRef: DockerHub
+                              image: golang:1
+                              shell: Sh
+                              command: go test -v ./...
+                        - step:
+                            type: Semgrep
+                            name: Semgrep_1
+                            identifier: Semgrep_1
+                            spec:
+                              target:
+                                detection: auto
+                                type: repository
+                              advanced:
+                                log:
+                                  level: info
+                                args:
+                                  cli: ""
+                              mode: orchestration
+                              config: default
+                        - step:
+                            type: Owasp
+                            name: Owasp_1
+                            identifier: Owasp_1
+                            spec:
+                              target:
+                                detection: auto
+                                type: repository
+                              advanced:
+                                log:
+                                  level: info
+                                args:
+                                  cli: ""
+                              mode: orchestration
+                              config: default
+                        - step:
+                            type: OsvScanner
+                            name: OsvScanner_1
+                            identifier: OsvScanner_1
+                            spec:
+                              target:
+                                detection: auto
+                                type: repository
+                              advanced:
+                                log:
+                                  level: info
+                                args:
+                                  cli: ""
+                              mode: orchestration
+                              config: default
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: dockerbuild
+                  identifier: dockerbuild
+                  spec:
+                    connectorRef: DockerHub
+                    repo: hobbit71/go-outyet
+                    tags:
+                      - latest
+                    caching: true
